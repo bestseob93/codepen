@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Page Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  ol, ul {
+    list-style: none;
+  }
+
+  .wrapper {
+    position: relative;
+    width: 1450px;
+    margin: 0 auto;
+  }
+  .wrapper .item-list {
+    position: relative;
+  }
+  .wrapper .item-list .item {
+    position: absolute;
+    width: 278px;
+    height: 278px;
+    top: 0;
+    left: 0;
+    border-radius: 100%;
+    background-color: #ff3;
+    z-index: 1;
+  }
+  .bottom__before {
+    transition: top 300ms linear;
+  }
+  .transform__before {
+    transform: none;
+    transition: transform 300ms linear;
+  }
+  .will--change__before {
+    transform: none;
+    transition: transform 300ms linear;
+  }
+  .wrapper .item-list .item.item--bottom {
+    top: 300px;
+    transition: top 300ms linear;
+    z-index: 66;
+  }
+  .wrapper .item-list .item.item--transform {
+    transform: translateY(300px);
+    transition: transform 300ms linear;
+    z-index: 66;
+  }
+  .wrapper .item-list .item.item--will__change {
+    transform: translateY(300px);
+    will-change: transform;
+    opacity: 1;
+    z-index: 66;
+  }
+
+  .item--animate {
+    transition: transform 300ms linear;
+  }
+  .menu {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 150;
+}
+
+.menu--visible {
+    pointer-events: auto;
+}
+
+.app-menu {
+    background-color: #fff;
+    color: #fff;
+    position: relative;
+    max-width: 400px;
+    width: 90%;
+    height: 100%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    -webkit-transform: translateX(-103%);
+            transform: translateX(-103%);
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+    z-index: 160;
+    pointer-events: auto;
+}
+
+.menu--visible .app-menu {
+    -webkit-transform: none;
+            transform: none;
+}
+
+.menu--animatable .app-menu {
+    transition: all 130ms ease-in;
+}
+
+.menu--visible.menu--animatable  .app-menu {
+    transition: all 330ms ease-out;
+}
+
+.menu:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    will-change: opacity;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0,0,0.3,1);
+}
+
+.menu--visible.menu:after {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* aux */
+
+body {
+  margin: 0;
+}
+
+.layout {
+  width: 375px;
+  height: 667px;
+  background-color: #f5f5f5;
+  position: relative;
+}
+
+.header {
+  background-color: #ccc;
+}
+
+.menu-icon {
+  content: "Menu";
+  color: #fff;
+  background-color: #666;
+  width: 40px;
+  height: 40px;
+}
+
+.app-menu {
+  width: 300px;
+  height: 667px;
+  box-shadow: none;
+  background-color: #ddd;
+}
+
+.menu:after {
+  width: 375px;
+  height: 667px;
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <ul class="item-list">
+      <li class="item bottom__before">
+        <a>
+          <div></div>
+        </a>
+      </li>
+      <li class="item transform__before">
+        <a>
+          <div></div>
+        </a>
+      </li>
+      <li class="item will--change__before">
+        <a>
+          <div></div>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="menu">
+    <div class="app-menu"></div>
+  </div>
+  <div class="layout">
+    <div class="header">
+      <div class="menu-icon"></div>
+    </div>
+  </div>
+
+  <script>
+    const items = document.querySelectorAll('.item-list .item');
+    window.onload = () => {
+      setItemPosition(items);
+    }
+
+    function setItemPosition (items) {
+      for (let i = 0; i < items.length; i += 1) {
+        const item = items[i];
+        item.style.left = (i * 290) + 'px';
+      }
+    }
+
+    function toggleBottom (ev) {
+      if (!ev.target.classList.contains('item--bottom')) {
+        ev.target.classList.add('item--bottom');
+      } else {
+        ev.target.classList.remove('item--bottom');
+      }
+    }
+
+    function toggleTransform (ev) {
+      if (!ev.target.classList.contains('item--transform')) {
+        ev.target.classList.add('item--transform');
+      } else {
+        ev.target.classList.remove('item--transform');
+      }
+    }
+
+    function toggleWillChange (ev) {
+      ev.target.classList.add('item--animate');
+      if (!ev.target.classList.contains('item--will__change')) {
+        ev.target.classList.add('item--will__change');
+      } else {
+        ev.target.classList.remove('item--will__change');
+      }
+    }
+
+    function handleTransitionEnd (ev) {
+      ev.target.classList.remove('item--animate');
+    }
+
+    const bottomItem = items[0];
+    const transformItem = items[1];
+    const willChangeItem = items[2];
+    bottomItem.addEventListener('click', toggleBottom, false);
+    transformItem.addEventListener('click', toggleTransform, false);
+    willChangeItem.addEventListener('click', toggleWillChange, false);
+    willChangeItem.addEventListener('transitionend', handleTransitionEnd, false);
+
+    function toggleClassMenu() {
+      myMenu.classList.add("menu--animatable");
+      if(!myMenu.classList.contains("menu--visible")) {
+        myMenu.classList.add("menu--visible");
+      } else {
+        myMenu.classList.remove('menu--visible');
+      }
+    }
+
+    function OnTransitionEnd() {
+      myMenu.classList.remove("menu--animatable");
+    }
+
+    var myMenu = document.querySelector(".menu");
+    var oppMenu = document.querySelector(".menu-icon");
+    myMenu.addEventListener("transitionend", OnTransitionEnd, false);
+    oppMenu.addEventListener("click", toggleClassMenu, false);
+    myMenu.addEventListener("click", toggleClassMenu, false);
+  </script>
+</body>
+</html>
